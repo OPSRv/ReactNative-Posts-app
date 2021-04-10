@@ -8,6 +8,7 @@ const App = () => {
   const [loaded] = useFonts({
     OpenSansBold: require("./assets/fonts/OpenSans-Bold.ttf"),
     OpenSansRegular: require("./assets/fonts/OpenSans-Regular.ttf"),
+    DancingScriptRegular: require("./assets/fonts/DancingScript-Regular.ttf"),
   });
   if (!loaded) {
     return <AppLoading />;
