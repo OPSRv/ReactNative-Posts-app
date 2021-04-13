@@ -1,11 +1,10 @@
-import React, { useState, useLayoutEffect } from "react";
-import { View, Text, StyleSheet, Button, FlatList } from "react-native";
-import { DATA } from "../data";
+import React, { useState, useEffect } from "react";
 import AppBackground from "../theme/AppBackground";
-import { Post } from "../components/Post";
-
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import { AppHeaderIcon } from "../components/AppHeaderIcon";
+import { PostList } from "../components/PostList";
+import { loadPosts } from "../store/actions/post";
+import { useDispatch, useSelector } from "react-redux";
 
 export const MainSreen = ({ navigation }) => {
   const openPostHandler = (post) => {
@@ -16,15 +15,17 @@ export const MainSreen = ({ navigation }) => {
     });
   };
 
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(loadPosts());
+  }, [dispatch]);
+
+  const allPosts = useSelector((state) => state.post.allPosts);
+
   const [selectionCount] = useState(0);
-  useLayoutEffect(() => {
+  useEffect(() => {
     navigation.setOptions({
-      title: "My blog",
-      headerTitleStyle: {
-        fontFamily: "DancingScriptRegular",
-        color: "#000",
-        fontSize: 35,
-      },
       headerRight: (props) => (
         <HeaderButtons HeaderButtonComponent={AppHeaderIcon}>
           <Item
@@ -39,7 +40,7 @@ export const MainSreen = ({ navigation }) => {
           <Item
             title="Take photo"
             iconName="ios-menu"
-            onPress={() => console.log("Press")}
+            onPress={() => navigation.toggleDrawer()}
           />
         </HeaderButtons>
       ),
@@ -48,21 +49,7 @@ export const MainSreen = ({ navigation }) => {
 
   return (
     <AppBackground>
-      <View style={styles.wrapper}>
-        <FlatList
-          data={DATA}
-          keyExtractor={(post) => post.id.toString()}
-          renderItem={({ item }) => (
-            <Post post={item} onOpen={openPostHandler} />
-          )}
-        />
-      </View>
+      <PostList data={allPosts} onOpen={openPostHandler} />
     </AppBackground>
   );
 };
-
-const styles = StyleSheet.create({
-  wrapper: {
-    padding: 10,
-  },
-});

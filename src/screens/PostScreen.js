@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
-  View,
   Text,
   StyleSheet,
   Image,
@@ -13,12 +12,33 @@ import AppBackground from "../theme/AppBackground";
 import { THEME } from "../theme/theme";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import { AppHeaderIcon } from "../components/AppHeaderIcon";
+import { useDispatch, useSelector } from "react-redux";
+import { toogleBooked } from "../store/actions/post";
 
-export const PostScreen = ({ ...route }) => {
-  const navigation = route.navigation;
-  const postId = route.route.params.postId;
+export const PostScreen = ({ route, navigation }) => {
+  const dispatch = useDispatch();
+  const postId = route.params.postId;
 
-  const post = DATA.find((p) => p.id === postId);
+  const post = useSelector((state) =>
+    state.post.allPosts.find((p) => p.id === postId)
+  );
+
+  const booked = useSelector((state) =>
+    state.post.bookedPosts.some((post) => post.id === postId)
+  );
+
+  useEffect(() => {
+    navigation.setParams({ booked });
+  }, [booked]);
+
+  const toogleHandler = useCallback(() => {
+    console.log(`postId`, postId);
+    dispatch(toogleBooked(postId));
+  }, [dispatch, postId]);
+
+  useEffect(() => {
+    navigation.setParams({ toogleHandler });
+  }, [toogleHandler]);
 
   const removeHandler = () => {
     Alert.alert(
@@ -41,25 +61,19 @@ export const PostScreen = ({ ...route }) => {
   };
 
   const [selectionCount] = useState(0);
-
   useEffect(() => {
     navigation.setParams({ booked: post.booked });
-    const booked = route.route.params.booked;
-    console.log(`booked`, booked);
+    const booked = route.params.booked;
+    const toogleHandlers = route.params.toogleHandler;
+
     const iconName = booked ? "ios-star" : "ios-star-outline";
     navigation.setOptions({
-      title: "Posts",
-      headerTitleStyle: {
-        fontFamily: "DancingScriptRegular",
-        color: "#000",
-        fontSize: 35,
-      },
       headerRight: (props) => (
         <HeaderButtons HeaderButtonComponent={AppHeaderIcon}>
           <Item
             title="Take photo"
             iconName={iconName}
-            onPress={() => console.log("Press")}
+            onPress={toogleHandlers}
           />
         </HeaderButtons>
       ),

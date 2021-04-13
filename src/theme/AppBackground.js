@@ -1,6 +1,7 @@
 import React from "react";
 import { SafeAreaView, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { View } from "react-native";
 
 const AppBackground = ({ children }) => {
   return (
@@ -8,7 +9,7 @@ const AppBackground = ({ children }) => {
       colors={["#4c669f", "#3b5998", "#992f6a"]}
       style={styles.gradient}
     >
-      <SafeAreaView style={styles.container}>{children}</SafeAreaView>
+      <View style={styles.container}>{children}</View>
     </LinearGradient>
   );
 };
